@@ -14,7 +14,7 @@
 
 I am a **Master of Public Policy (MPP) candidate** specializing in **population health and harm reduction strategies**. As an **international student from Mexico** with a background in **Economics and Finance**, I bridge **quantitative analysis and policy innovation** to tackle health and social justice issues. My expertise lies at the intersection of **data-driven policymaking, financial systems, and community engagement**.
 
-I bring experience from the **Mexican federal government**, **tech consulting for organizations like Meta**, and my current role as a **Graduate Research Assistant at the Health Care Financing Initiative (HCFI) at Georgetown University**. In this role, I analyze the **cost-effectiveness of Social Determinants of Health (SDOH) interventions in medical settings**, leveraging data insights to inform evidence-based policy solutions.
+I bring experience from the **Mexican federal government**, **tech consulting for organizations like Meta**, and my current role as a **Graduate Research Assistant at the Health Care Financing Initiative (HCFI) at Georgetown University**. In this role, I use **econometric models in Stata** and conduct **cost-effectiveness analysis** on Social Determinants of Health (SDOH) interventions in medical settings, leveraging data insights to inform evidence-based policy solutions.
 
 Beyond academia, I am committed to fostering **inclusive leadership and cultural advocacy**. As **President of the Georgetown University Graduate Association of Mexican Students** and **Chief of Staff of the Georgetown Latino Policy Initiative**, I work to amplify the voices of underrepresented communities through policy and civic engagement.
 
@@ -24,17 +24,17 @@ Beyond academia, I am committed to fostering **inclusive leadership and cultural
 
 ### 🔹 Health & Policy Research  
 - **Graduate Research Assistant | Health Care Financing Initiative (HCFI), Georgetown University**  
-  - Evaluating the **cost-effectiveness** of Social Determinants of Health (SDOH) programs in healthcare settings.  
-  - Applying **econometric models** to analyze the impact of policy interventions on public health outcomes.  
+  - Analyzed the **cost-effectiveness** of Social Determinants of Health (SDOH) programs in healthcare settings using **Stata** and econometric modeling.  
+  - Conducted **policy simulations** to evaluate public health outcomes and developed actionable recommendations for policymakers.  
 
 - **Peer Counselor | Rehab Center Torre Fuerte Civil Association**  
-  - Provided direct **harm reduction and addiction recovery support** to inpatients.  
-  - Developed an understanding of **public health challenges** and behavioral health strategies.  
+  - Supported inpatients with **harm reduction strategies** and **addiction recovery programs** through one-on-one counseling.  
+  - Designed and facilitated **behavioral health workshops** to address substance abuse challenges in vulnerable populations.  
 
 ### 🔹 Economics & Finance  
 - **Treasury Analyst | Social Security Institute for the Mexican Armed Forces (ISSFAM)**  
-  - Conducted **financial risk assessments** and managed **pension funds** for military personnel.  
-  - Designed **economic policy recommendations** to improve public finance systems.  
+  - Conducted **financial risk assessments** using quantitative forecasting methods to manage pension funds for military personnel.  
+  - Developed **economic policy recommendations** to enhance public finance systems and sustainability.  
 
 ---
 
@@ -55,7 +55,6 @@ Beyond academia, I am committed to fostering **inclusive leadership and cultural
 ## 📌 Areas of Expertise  
 
 - **Health & Health Care Policy** 🏥  
-- **Juvenile Justice & Social Equity** ⚖️  
 - **Economic & Financial Policy Analysis** 📊  
 - **Data-Driven Policy Research & Impact Evaluation** 📈  
 - **Harm Reduction & Public Health Strategies** 🚑  
@@ -79,3 +78,4 @@ Beyond academia, I am committed to fostering **inclusive leadership and cultural
 ---
 
 ### ⚡ “Policy should not only be data-driven but also people-centered.”
+
