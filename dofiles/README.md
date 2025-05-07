@@ -4,10 +4,10 @@
 
 We developed a simple data generating process (DGP) where:
 
-X ~ N(0, 1)
-error ~ N(0, 1)
-Y = 1.8 * X + error
-
+- X ~ N(0, 1)
+- error ~ N(0, 1)
+- Outcome variable:
+  Y = 1.8 * X + error
 
 This DGP is identical in both parts of the study.
 
