@@ -68,7 +68,6 @@ gen grade_science   = ustrregexs(1) if ustrregexm(line_cleaned, "Science\s*-\s*(
 gen grade_uraia     = ustrregexs(1) if ustrregexm(line_cleaned, "Uraia\s*-\s*([A-Z])")
 gen grade_avg       = ustrregexs(1) if ustrregexm(line_cleaned, "Average Grade\s*-\s*([A-Z])")
 
-
 // Clean up temp vars
 drop line_cleaned* record_id rec_index
 
@@ -220,3 +219,60 @@ order REGION DISTRICT COSTITUENCY WARD total_votes total_cands ward_id TTL*
 rename TTL_VOTES* votes_*
 rename *, lower
 drop _merge
+
+// Q5 — Tanzania PSLE Data + Ward Merge
+
+// Load PSLE data
+use "$q5_psle_data", clear
+
+// Extract NECTA Centre Number (PS codes)
+gen necta_centre_no = trim(ustrregexs(1)) if ustrregexm(schoolname, "(PS\d{7})")
+
+// Extract cleaned school name (before 'Primary School')
+gen pos = strpos(lower(schoolname), "primary school")
+gen school_clean = trim(substr(schoolname, 1, pos - 1)) if pos > 0
+replace school_clean = schoolname if pos == 0
+
+// Extract school code from address (ensure uppercase)
+gen schoolcode_check = ustrregexs(1) if ustrregexm(school_code_address, "(ps\d{7})")
+replace schoolcode_check = strupper(schoolcode_check)
+
+// Clean district names (remove CC, TC, MC, and parentheses)
+rename district_name council
+replace council = regexr(council, "\s*\([^)]*\)", "")
+replace council = regexr(council, "\s+(CC|TC|MC)$", "")
+
+// Remove duplicate NECTA codes
+duplicates drop necta_centre_no, force
+
+// Prepare merge dataset from school location data
+preserve
+
+use "$q5_school_location", clear
+
+// Check and align variable names
+describe
+
+// Rename NECTACentreNo to match PSLE dataset if needed
+rename NECTACentreNo necta_centre_no
+
+// Standardize council name
+replace Council = upper(Council)
+replace Council = regexr(Council, "\s*\([^)]*\)", "")
+replace Council = regexr(Council, "\s+(CC|TC|MC)$", "")
+
+// Remove duplicates to clean merge base
+duplicates drop necta_centre_no Council School, force
+duplicates drop necta_centre_no, force
+
+tempfile merge_data
+save `merge_data'
+
+restore
+
+// Merge PSLE data with ward info by NECTA Centre Number
+merge 1:1 necta_centre_no using `merge_data'
+
+// Drop records only from using dataset (if any)
+drop if _merge == 2
+
