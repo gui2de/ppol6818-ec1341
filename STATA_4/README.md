@@ -13,7 +13,7 @@ We explore:
 
 ## Part 1: Individual-Level Power Calculations
 
-We simulate outcome \( Y \sim N(0,1) \), apply treatment effects between 0–0.2 SD, and use Stata’s `power twomeans` to calculate required sample sizes under:
+We simulate an outcome variable **Y** drawn from a standard normal distribution (mean = 0, sd = 1), apply treatment effects between 0 and 0.2 SD, and use Stata’s `power twomeans` to calculate required sample sizes under:
 - 50% treatment vs. control  
 - 15% expected attrition  
 - Only 30% of units receiving treatment
@@ -36,11 +36,14 @@ We investigate how increasing **cluster size** or **number of clusters** affects
 ## Part 3: De-biasing Parameter Estimates Using Controls
 
 We construct a data-generating process (DGP) where:
-- The outcome \( Y \) is influenced by:
-  - A **confounder** (affects treatment + outcome)  
+- The outcome **Y** is influenced by:
+  - A **confounder** (affects both treatment and outcome)  
   - A covariate affecting only outcome  
   - A covariate affecting only treatment  
   - Strata fixed effects
+
+The true equation is:
+> **Y = β₁ * Confounder + β₂ * Treatment + β₃ * (Treatment × Treatment Effect) + Strata Fixed Effects**
 
 We estimate five regression models combining these variables and compare their estimates of the confounder’s effect across growing sample sizes.
 
@@ -99,4 +102,6 @@ We estimate five regression models combining these variables and compare their e
 - `README.md` → This file
 
 ---
+
+
 
