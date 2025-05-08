@@ -156,3 +156,67 @@ rename enum_`best_iter' enumerator_id
 
 // Summary: number of households per enumerator
 tabulate enumerator_id
+
+// Q4 — 2010 Tanzania Election Data Cleaning
+
+import excel using "$tz_elec_10_raw", clear
+
+// Drop columns G and K (not needed)
+drop G K
+
+// Clean up variable names (based on row 5 labels)
+foreach var of varlist * {
+    rename `var' `=strtoname(`var'[5])'
+}
+
+// Drop extra header rows from Excel
+drop if _n < 7
+
+// Fill down REGION, DISTRICT, COSTITUENCY, WARD
+foreach var in REGION DISTRICT COSTITUENCY WARD {
+    replace `var' = `var'[_n-1] if `var' == ""
+}
+
+// Clean up TTL_VOTES (handle 'UN OPPOSSED')
+replace TTL_VOTES = "" if TTL_VOTES == "UN OPPOSSED"
+destring TTL_VOTES, replace
+
+// Calculate total votes and number of candidates per ward
+bysort WARD: egen total_votes = total(TTL_VOTES)
+bysort WARD: gen total_cands = _N
+
+// Keep only relevant variables
+keep REGION DISTRICT COSTITUENCY WARD POLITICAL_PARTY TTL_VOTES total_votes total_cands
+
+// Remove duplicate rows
+duplicates drop
+
+// Create ward_id grouping to avoid name overlaps across regions
+egen ward_id = group(REGION DISTRICT COSTITUENCY WARD)
+
+// Prepare POLITICAL_PARTY names for reshaping
+replace POLITICAL_PARTY = subinstr(POLITICAL_PARTY, "-", "_", .)
+replace POLITICAL_PARTY = subinstr(POLITICAL_PARTY, " ", "", .)
+
+// Save unique ward-level info to merge back later
+preserve
+keep REGION DISTRICT COSTITUENCY WARD total_votes total_cands ward_id
+duplicates drop
+tempfile ward_info
+save `ward_info'
+restore
+
+// Collapse votes by ward and political party
+collapse (sum) TTL_VOTES, by(ward_id POLITICAL_PARTY)
+
+// Reshape to wide format
+reshape wide TTL_VOTES, i(ward_id) j(POLITICAL_PARTY) string
+
+// Merge back ward details
+merge 1:1 ward_id using `ward_info'
+
+// Reorder and clean up variable names
+order REGION DISTRICT COSTITUENCY WARD total_votes total_cands ward_id TTL*
+rename TTL_VOTES* votes_*
+rename *, lower
+drop _merge
