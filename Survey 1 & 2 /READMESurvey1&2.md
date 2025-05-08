@@ -26,4 +26,4 @@ You can fill out the survey through SurveyCTO here:
 - **Modules included**: Identification, demographics, household roster, spending module, satisfaction measures, and a duplicate response check.
 - **Key features**: Relevance conditions, constraints, Likert scales, cascading choices, and calculated fields.
 
-Feel free to explore both links and provide feedback during peer review!
+Feel free to explore both links and provide feedback!
