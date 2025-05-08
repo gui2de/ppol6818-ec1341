@@ -198,3 +198,88 @@ tab reject_null num_clusters, col
 
 display "With 70% uptake, about 100 clusters (15 per school) are needed for 80% power."
 
+// Part 3 — De-biasing Estimates
+
+
+capture program drop strata_sim_ec
+program define strata_sim_ec, rclass
+    syntax, strata_num(integer) samp_within_strata(integer)
+
+    clear
+    set obs `strata_num'
+    gen strata_id = _n
+    gen strata_effect = rnormal(0, 2)
+
+    expand `samp_within_strata'
+    gen indiv_id = _n
+
+    // Continuous covariates
+    gen confounder_var = rnormal(10, 1)          // affects both Y and treatment
+    gen treat_assign = (confounder_var <= 10)    // makes treatment tied to confounder
+    gen outcome_only_var = rnormal(10, 1)        // affects only Y
+    gen treatment_only_var = rnormal(3, 1)       // affects only treatment
+    gen treatment_effect = treatment_only_var + runiform(2, 3)
+
+    // Outcome variable
+    gen y_outcome = 5 * outcome_only_var + 2.1 * confounder_var + treat_assign * treatment_effect + strata_effect
+
+    // Regressions
+    reg y_outcome confounder_var treat_assign i.strata_id
+    matrix R = r(table)
+    return scalar coef1 = R[1,1]
+
+    reg y_outcome confounder_var outcome_only_var i.strata_id
+    matrix R = r(table)
+    return scalar coef2 = R[1,1]
+
+    reg y_outcome confounder_var outcome_only_var treat_assign treatment_effect i.strata_id
+    matrix R = r(table)
+    return scalar coef3 = R[1,1]
+
+    reg y_outcome confounder_var i.treat_assign##c.treatment_effect i.strata_id
+    matrix R = r(table)
+    return scalar coef4 = R[1,1]
+
+    reg y_outcome confounder_var outcome_only_var i.treat_assign##c.treatment_effect i.strata_id
+    matrix R = r(table)
+    return scalar coef5 = R[1,1]
+
+    return scalar sample_n = _N
+end
+
+// Run simulations across different sample sizes
+clear
+tempfile results_ec
+save `results_ec', replace emptyok
+
+forvalues s = 10(25)250 {
+    simulate m1=r(coef1) m2=r(coef2) m3=r(coef3) m4=r(coef4) m5=r(coef5) sample_n=r(sample_n), reps(500): ///
+        strata_sim_ec, strata_num(6) samp_within_strata(`s')
+
+    append using `results_ec'
+    save `results_ec', replace
+}
+
+// Summarize means and SDs
+estpost tabstat m1 m2 m3 m4 m5, stat(mean sd) by(sample_n) elabels
+estimates store summary_ec
+
+// Export summary table (update to your directory or comment if not needed)
+* esttab summary_ec using "summary_table_ec.tex", ///
+*     cells("m1(fmt(%9.2f) par(%9.2f)) m2(fmt(%9.2f) par(%9.2f)) m3(fmt(%9.2f) par(%9.2f)) m4(fmt(%9.2f) par(%9.2f)) m5(fmt(%9.2f) par(%9.2f))") ///
+*     unstack varlabels(`e(labels)') nonumb noobs replace fragment
+ssc install vioplot
+// Violin plot of confounder beta estimates
+vioplot m1, over(sample_n) horizontal title("Violin Plot: Confounder Beta Ec1341") subtitle("True Effect = 2.1") ylabel(, angle(0))
+
+
+twoway ///
+    (kdensity m1 if sample_n == 60, lcolor(navy)) ///
+    (kdensity m1 if sample_n == 360, lcolor(purple)) ///
+    (kdensity m1 if sample_n == 660, lcolor(teal)) ///
+    , xline(2.1, lcolor(red) lpattern(dash)) ///
+      legend(label(1 "N = 60") label(2 "N = 360") label(3 "N = 660")) ///
+      ylabel(, valuelabel) ///
+      ytitle("Density") ///
+      title("Density of Confounder Beta Across Sample Sizes Ec1341")
+
