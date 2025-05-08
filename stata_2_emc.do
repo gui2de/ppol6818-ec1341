@@ -117,3 +117,42 @@ merge 1:m department_code using `household_fixed'
 // Clean up any unmatched rows (if needed)
 drop if hh1 == .
 
+// Q3 — Enumerator Assignment based on GPS
+
+use "$q3_gps", clear
+
+// Set seed for reproducibility
+set seed 145678
+
+// Target number of households per enumerator (~6)
+scalar target_per_enum = 6
+scalar best_enum_diff = .
+scalar best_enum_iteration = .
+
+// Run 1000 iterations of K-means clustering to find best assignment
+forval i = 1/1000 {
+    cluster kmeans latitude longitude, k(19) name(enum_`i')
+    bysort enum_`i': gen cluster_size_`i' = _N
+    quietly summarize cluster_size_`i', meanonly
+    scalar enum_diff = abs(r(mean) - target_per_enum)
+
+    // Update best result if current is better
+    if missing(best_enum_diff) | enum_diff < best_enum_diff {
+        scalar best_enum_diff = enum_diff
+        scalar best_enum_iteration = `i'
+        tempfile best_enum_result
+        save `best_enum_result', replace
+    }
+}
+
+// Load the best assignment
+use `best_enum_result', clear
+display "Best iteration: " best_enum_iteration
+local best_iter = best_enum_iteration
+
+// Keep only relevant variables
+keep latitude longitude id age female enum_`best_iter' cluster_size_`best_iter'
+rename enum_`best_iter' enumerator_id
+
+// Summary: number of households per enumerator
+tabulate enumerator_id
